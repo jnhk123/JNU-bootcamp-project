@@ -4,10 +4,94 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
+    <style>
+      .markerWindow {
+        padding: 10px;
+      }
+      .text {
+        white-space: nowrap;
+      }
+      .navigatorWrapper {
+        display: flex;
+        gap: 20px;
+        justify-content: space-between;
+      }
+      .controlWrapper {
+        display: flex;
+        gap: 20px;
+      }
+      .localWrapper,
+      .typeWrapper {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .select {
+        width: 120px;
+      }
+
+      #map {
+        margin-top: 10px;
+      }
+
+      .chartWrapper {
+        margin-top: 10px;
+        width: 100%;
+        overflow: auto;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+    </style>
   </head>
   <body>
+    <div class="bodyWrapper">
+      <div>
+        <h1>공영주차장 정보</h1>
+      </div>
+      <div class="navigatorWrapper">
+        <div class="controlWrapper">
+          <div class="localWrapper">
+            <span>구</span>
+            <select class="select" id="guSelect">
+              <option value="ALL" selected>전체</option>
+              <option value="광산구">광산구</option>
+              <option value="북구">북구</option>
+              <option value="서구">서구</option>
+              <option value="동구">동구</option>
+              <option value="남구">남구</option>
+            </select>
+          </div>
+          <div class="typeWrapper">
+            <span>요금유형</span>
+            <select class="select" id="typeSelect">
+              <option value="ALL" selected>전체</option>
+              <option value="유료">유료</option>
+              <option value="무료">무료</option>
+            </select>
+          </div>
+          <div class="btnWrapper">
+            <button onclick="getParkingData()">검색</button>
+          </div>
+        </div>
+      </div>
+      <div class="mapWrapper">
+        <div id="map" style="width: 100%; height: 500px"></div>
+      </div>
+      <div class="chartWrapper">
+        <img
+          src="http://localhost:5000/bar-chart/gu"
+          width="800"
+          height="600"
+        />
+        <img
+          src="http://localhost:5000/pie-chart/fee"
+          width="600"
+          height="600"
+        />
+      </div>
+    </div>
     <!-- 지도를 표시할 div 입니다 -->
-    <div id="map" style="width: 100%; height: 500px"></div>
 
     <script
       type="text/javascript"
@@ -19,6 +103,9 @@
 
       let latitude = 35.1755091;
       let longitude = 126.9071166;
+
+      const markers = [];
+      const infoWindows = [];
 
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
@@ -48,7 +135,7 @@
         const mapContainer = document.getElementById("map"), // 지도를 표시할 div
           mapOption = {
             center: new kakao.maps.LatLng(latitude, longitude), // 지도의 중심좌표
-            level: 3, // 지도의 확대 레벨
+            level: 5, // 지도의 확대 레벨
           };
 
         // 지도를 표시할 div와  지도 옵션으로  지도를 생성합니다
@@ -56,20 +143,37 @@
       }
 
       async function getParkingData() {
+        const gu = document.querySelector("#guSelect").value;
+        const type = document.querySelector("#typeSelect").value;
+
+        if (markers.length > 0) {
+          markers.forEach((m) => {
+            m.setMap(null);
+          });
+        }
+
+        if (infoWindows.length > 0) {
+          infoWindows.forEach((i) => {
+            i.close();
+          });
+        }
+
         const response = await axios({
           url: "http://127.0.0.1:5000/data/has_coord",
           method: "get",
+          params: {
+            gu,
+            type,
+          },
         });
         if (MAP) {
           response.data.forEach((item) => {
-            console.log(item);
-
             const infowindow = new kakao.maps.InfoWindow({
               content: `
-                <div>
-                  <p>주차장 명 : ${item["주차장명"]}</p>
-                  <p>주차구획 수 : ${item["주차구획수"]}</p>
-                  <p>요금정보 : ${item["요금정보"]}</p>
+                <div class="markerWindow">
+                  <p class="text">주차장 명 : ${item["주차장명"]}</p>
+                  <p class="text">주차구획 수 : ${item["주차구획수"]}</p>
+                  <p class="text">요금정보 : ${item["요금정보"]}</p>
                 </div>
               `,
               removable: true,
@@ -85,6 +189,9 @@
             });
 
             marker.setMap(MAP);
+
+            markers.push(marker);
+            infoWindows.push(infowindow);
           });
         }
       }
