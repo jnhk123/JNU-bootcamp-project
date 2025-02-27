@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <!-- 지도를 표시할 div 입니다 -->
+    <div id="map" style="width: 100%; height: 500px"></div>
+
+    <script
+      type="text/javascript"
+      src="//dapi.kakao.com/v2/maps/sdk.js?appkey=f786f293dbfd58feeb1ebb28c5a6c1ee"
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+      let MAP = null;
+
+      let latitude = 35.1755091;
+      let longitude = 126.9071166;
+
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          function (position) {
+            // 성공적으로 위치를 가져온 경우
+            latitude = position.coords.latitude; // 위도
+            longitude = position.coords.longitude; // 경도
+
+            startMap();
+          },
+          function (error) {
+            // 오류가 발생한 경우
+            console.error("Error Code = " + error.code + " - " + error.message);
+            startMap();
+          }
+        );
+      } else {
+        console.log("이 브라우저는 Geolocation을 지원하지 않습니다.");
+      }
+
+      function startMap() {
+        drawMap();
+        getParkingData();
+      }
+
+      function drawMap() {
+        const mapContainer = document.getElementById("map"), // 지도를 표시할 div
+          mapOption = {
+            center: new kakao.maps.LatLng(latitude, longitude), // 지도의 중심좌표
+            level: 3, // 지도의 확대 레벨
+          };
+
+        // 지도를 표시할 div와  지도 옵션으로  지도를 생성합니다
+        MAP = new kakao.maps.Map(mapContainer, mapOption);
+      }
+
+      async function getParkingData() {
+        const response = await axios({
+          url: "http://127.0.0.1:5000/data/has_coord",
+          method: "get",
+        });
+        console.log(response.data);
+        console.log("response.data", JSON.parse(response.data));
+
+        response.data.forEach((item) => {
+          console.log(item);
+        });
+      }
+    </script>
+  </body>
+</html>
