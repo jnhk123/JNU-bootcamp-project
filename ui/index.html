@@ -60,12 +60,33 @@
           url: "http://127.0.0.1:5000/data/has_coord",
           method: "get",
         });
-        console.log(response.data);
-        console.log("response.data", JSON.parse(response.data));
+        if (MAP) {
+          response.data.forEach((item) => {
+            console.log(item);
 
-        response.data.forEach((item) => {
-          console.log(item);
-        });
+            const infowindow = new kakao.maps.InfoWindow({
+              content: `
+                <div>
+                  <p>주차장 명 : ${item["주차장명"]}</p>
+                  <p>주차구획 수 : ${item["주차구획수"]}</p>
+                  <p>요금정보 : ${item["요금정보"]}</p>
+                </div>
+              `,
+              removable: true,
+            });
+
+            const marker = new kakao.maps.Marker({
+              position: new kakao.maps.LatLng(item.y, item.x),
+            });
+
+            kakao.maps.event.addListener(marker, "click", function () {
+              // 마커 위에 인포윈도우를 표시합니다
+              infowindow.open(MAP, marker);
+            });
+
+            marker.setMap(MAP);
+          });
+        }
       }
     </script>
   </body>
