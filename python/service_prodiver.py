@@ -78,7 +78,7 @@ def get_non_coord():
 @app.route('/bar-chart/gu')
 def draw_bar_chart():
     df = parking.origin
-    fig = visualization.group_by_gu_and_draw_bar(df)
+    fig = visualization.get_group_by_gu_and_draw_bar(df)
     buf = io.BytesIO()
     fig.savefig(buf, format='png')
     plt.close(fig)
@@ -88,12 +88,36 @@ def draw_bar_chart():
 @app.route('/pie-chart/fee')
 def draw_pie_chart():
     df = parking.origin
-    fig = visualization.fee_info_pie_chart(df)
+    fig = visualization.get_fee_info_pie_chart(df)
     buf = io.BytesIO()
     fig.savefig(buf, format='png')
     plt.close(fig)
     buf.seek(0)
     return send_file(buf, mimetype='image/png')
 
+@app.route('/bar-chart/fee/<string:gu>')
+def draw_bar_chart_for_gu(gu):
+    df = parking.origin
+    fig = visualization.get_fee_by_gu(df, gu)
+    buf = io.BytesIO()
+    fig.savefig(buf, format='png')
+    plt.close(fig)
+    buf.seek(0)
+    return send_file(buf, mimetype='image/png')
+
+# @app.route('/charged/parking')
+# def get_charged_parking():
+#     df = parking.origin
+#
+#     fig = visualization.get_charged_parking(df)
+#     buf = io.BytesIO()
+#     fig.savefig(buf, format='png')
+#     plt.close(fig)
+#     buf.seek(0)
+#     return send_file(buf, mimetype='image/png')
+#     return None
+
 if __name__ == '__main__':
     app.run(debug=True)
+
+

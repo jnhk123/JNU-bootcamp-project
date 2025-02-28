@@ -4,8 +4,7 @@ import pandas as pd
 plt.rcParams['font.family'] = 'Malgun Gothic'
 plt.rcParams['axes.unicode_minus'] = False
 
-
-def group_by_gu_and_draw_bar(df):
+def get_group_by_gu_and_draw_bar(df):
     # '요금정보' 컬럼의 '-' 값을 '정보없음'으로 변경
     df = df.copy()
     df['요금정보'] = df['요금정보'].replace('-', '정보없음')
@@ -47,14 +46,13 @@ def group_by_gu_and_draw_bar(df):
     ax.legend()
 
     total = free_counts + paid_counts + no_info_counts;
-    y = ((total.max() + 10) // 10) * 10
 
-    ax.set_ylim(0, y)
+    ax.set_ylim(0, correction_y(total.max()))
 
     return fig
 
 
-def fee_info_pie_chart(df):
+def get_fee_info_pie_chart(df):
     # '요금정보' 컬럼에서 '-' 값을 '정보 없음'으로 대체
     fee_series = df['요금정보'].replace('-', '정보 없음')
     # 각 요금정보별 건수 집계
@@ -80,3 +78,65 @@ def fee_info_pie_chart(df):
     ax.set_title(f'요금정보 분포 (총 {total}건)', fontsize=14)
 
     return fig
+
+def get_fee_by_gu(df, gu):
+
+    df = df.copy()
+    df['요금정보'] = df['요금정보'].replace('-', '정보 없음');
+    df = df[df['구'] == gu]
+
+    pivot = df.pivot_table(index='요금정보', aggfunc='size', fill_value=0)
+
+    # Figure와 Axes 생성
+    fig, ax = plt.subplots()
+
+    # 막대그래프로 시각화
+    bars = ax.bar(pivot.index, pivot.values, color=['skyblue', 'salmon', 'goldenrod'])
+    ax.set_xlabel('요금정보')
+    ax.set_ylabel('개수')
+    ax.set_title(f'{gu}의 요금정보 분포')
+
+    # 각 막대 위에 개수 표기
+    for bar in bars:
+        height = bar.get_height()
+        ax.annotate(f'{height}',
+                    xy=(bar.get_x() + bar.get_width() / 2, height),
+                    xytext=(0, 3),  # 텍스트와 막대 간의 간격
+                    textcoords="offset points",
+                    ha='center', va='bottom')
+
+    ax.set_ylim(0, correction_y(pivot.max()))
+
+    # Figure 객체 반환
+    return fig
+
+def get_charged_parking(df):
+    df = df.copy()
+    df = df[df['요금정보'] == '유료']
+
+    exclude_cols = ['소재지도로명주소', '소재지지번주소', 'x', 'y']
+    # 제외할 컬럼들 드롭
+    sub_df = df.drop(columns=exclude_cols, errors='ignore')
+
+    # Figure, Axes 생성
+    fig, ax = plt.subplots(figsize=(10, 5))
+    ax.axis('off')  # 축을 안 보이도록 처리
+
+    # 테이블 생성
+    # cellText: 실제 데이터 (2차원 리스트 형태)
+    # colLabels: 컬럼명
+    # loc='center' : 중앙 정렬
+    table = ax.table(cellText=sub_df.values,
+                     colLabels=sub_df.columns,
+                     loc='center')
+
+    # 글자 크기 조절
+    table.auto_set_font_size(False)
+    table.set_fontsize(10)
+
+    # 레이아웃 자동 조절
+    fig.tight_layout()
+    return fig
+
+def correction_y(value):
+    return ((value + 10) // 10) * 10
