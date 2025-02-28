@@ -5,16 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2a59eef5-8c99-4c4a-95af-18ffef867abc" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.dockerignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pre_processing.py" beforeDir="false" afterPath="$PROJECT_DIR$/pre_processing.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/processedParking.csv" beforeDir="false" afterPath="$PROJECT_DIR$/processedParking.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/service_prodiver.py" beforeDir="false" afterPath="$PROJECT_DIR$/service_prodiver.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/visualization.py" beforeDir="false" afterPath="$PROJECT_DIR$/visualization.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -112,7 +105,7 @@
       <option name="presentableId" value="Default" />
       <updated>1740664124403</updated>
       <workItem from="1740664125405" duration="5210000" />
-      <workItem from="1740730211609" duration="4922000" />
+      <workItem from="1740730211609" duration="7191000" />
     </task>
     <servers />
   </component>
