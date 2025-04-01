@@ -5,7 +5,7 @@ import requests
 def get_address_info(address):
     url = "https://dapi.kakao.com/v2/local/search/address?query="+address
     headers = {
-        "Authorization": "KakaoAK a57df7bb2af61b5a75104d598b9a9c4a",
+        "Authorization": "KakaoAK {API KEY 입력}",
         "Accept": "application/json",
         # 필요한 다른 헤더도 추가할 수 있습니다.
     }
